@@ -27,37 +27,12 @@ class User {
   });
 
   factory User.fromMap(Map<String, dynamic> e) {
-    final name = UserName(
-      title: e['name']['title'],
-      first: e['name']['first'],
-      last: e['name']['last'],
-    );
-    final dob = UserDob(
-      date: DateTime.parse(e['dob']['date']),
-      age: e['dob']['age'],
-    );
+    final name = UserName.fromMap(e['name']);
+    final dob = UserDob.fromMap(e['dob']);
 
-    final picture = UserPicture(
-      large: e['picture']['large'],
-      medium: e['picture']['medium'],
-      thumbnail: e['picture']['thumbnail'],
-    );
+    final picture = UserPicture.fromMap(e['picture']);
 
-    final location = UserLocation(
-      city: e['location']['city'],
-      state: e['location']['state'],
-      country: e['location']['country'],
-      postcode: e['location']['postcode'].toString(),
-      street: LocationStreet(
-          number: e['location']['street']['number'],
-          name: e['location']['street']['name']),
-      coordinates: LocationCoordinate(
-          latitude: e['location']['coordinates']['latitude'],
-          longitude: e['location']['coordinates']['longitude']),
-      timezone: LocationTimezone(
-          offset: e['location']['timezone']['offset'],
-          description: e['location']['timezone']['description']),
-    );
+    final location = UserLocation.fromMap(e['location']);
 
     return User(
       cell: e['cell'],

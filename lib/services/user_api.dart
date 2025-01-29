@@ -1,7 +1,5 @@
 import 'package:rest_api/model/user.dart';
-import 'package:rest_api/model/user_dob.dart';
-import 'package:rest_api/model/user_location.dart';
-import 'package:rest_api/model/user_name.dart';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
