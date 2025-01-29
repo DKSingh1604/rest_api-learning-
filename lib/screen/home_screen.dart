@@ -1,7 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+
+import 'package:rest_api/model/user.dart';
+import 'package:rest_api/services/user_api.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,26 +11,25 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<dynamic> users = [];
+  List<User> users = [];
 
-  void fetchUsers() async {
-    print("Fetched Users");
-    const url = 'https://randomuser.me/api/?results=100';
-    final uri = Uri.parse(url);
-    final response = await http.get(uri);
-
-    final body = response.body;
-    final json = jsonDecode(body);
+  Future<void> fetchUsers() async {
+    final response = await UserApi.fetchUsers();
     setState(() {
-      users = json['results'];
+      users = response;
     });
-    print("Fetching completed");
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUsers();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         title: const Text("REST API Call"),
@@ -38,37 +37,29 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView.builder(
         itemCount: users.length,
         itemBuilder: (context, index) {
-          final user = users[index];
-          final email = user['email'];
-          final name = user['name']['first'];
-          final imageUrl = user['picture']['thumbnail'];
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.black),
-              ),
+          final user = users[index + 1];
+
+          return GestureDetector(
+            onTap: () {
+              print("Name: ${user.fullName}");
+              print("Gender: ${user.gender}");
+              print("Phone: ${user.phone}");
+              print("Nationality: ${user.nat}");
+              print("DOB: ${user.dob.date.toString()}");
+              print("Age: ${user.dob.age}");
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
               child: ListTile(
-                tileColor: Colors.grey,
-                // leading: Text('${index + 1}'),
-                leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(26),
-                  child: Image.network(
-                    imageUrl,
-                    width: 50,
-                  ),
-                ),
-                title: Text(name.toString()),
-                subtitle: Text(email),
+                tileColor: user.gender == 'male' ? Colors.blue : Colors.green,
+                leading: Image.network(user.picture!.thumbnail),
+                title: Text(user.fullName),
+                subtitle: Text(
+                    "${user.location.city}, ${user.location.country}, ${user.location.postcode}"),
               ),
             ),
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: fetchUsers,
-        child: const Text("Fetch"),
       ),
     );
   }
